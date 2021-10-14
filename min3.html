@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Marked min</title>
+</head>
+<body>
+	<nav id="navigation">
+		<a href="#home" id="index">Home</a>
+		<a href="#about" id="about">About Us</a>
+		<a href="#projects" id="projects">Projects</a>
+	</nav>
+
+	<div id="content"></div>
+
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+	<script>
+
+
+// run parallel script
+function loadScript(url, completeCallback) {
+   var script = document.createElement('script'), done = false,
+       head = document.getElementsByTagName("head")[0];
+   script.src = url;
+   script.onload = script.onreadystatechange = function(){
+     if ( !done && (!this.readyState ||
+          this.readyState == "loaded" || this.readyState == "complete") ) {
+       done = true;
+       completeCallback();
+
+      // IE memory leak
+      script.onload = script.onreadystatechange = null;
+      head.removeChild( script );
+    }
+  };
+  head.appendChild(script);
+}
+
+// use case
+// loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js", function () { alert('jQuery has been loaded.'); });
+
+
+// fill contents
+async function run(here) {
+	let file = await fetch(here)
+	let text = await file.text()
+
+	document.getElementById('content').innerHTML =
+	marked(text);
+}
+
+// nav click 
+var docs = "pages/index.md"
+var jsscript = "pages/index.js"
+
+
+// run on startup
+// run(docs)
+loadScript(jsscript,
+function () { 
+	// console.log(jsscript);
+ });
+
+
+// click event for nav [make basic router for this]
+document.getElementById("navigation").addEventListener("click",function(e) { 
+	if(e.target && e.target.nodeName == "A") {
+		// docs = e.target.id+".md"
+		jsscript = "pages/"+e.target.id+".js"
+		var thispage = 'pages/'+docs;
+		// run(thispage)
+		
+		loadScript(jsscript,
+            function () { 
+            	// console.log(jsscript);
+             });
+}
+});
+</script>
+</body>
+</html>
